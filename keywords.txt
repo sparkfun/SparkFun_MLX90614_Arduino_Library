@@ -1,0 +1,41 @@
+#######################################
+# Syntax Coloring Map For SFE_MicroOLED
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+IRTherm	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+setUnit	KEYWORD2
+read	KEYWORD2
+object	KEYWORD2
+ambient	KEYWORD2
+readEmissivity	KEYWORD2
+setEmissivity	KEYWORD2
+readAddress	KEYWORD2
+setAddress	KEYWORD2
+readID	KEYWORD2
+getIDH	KEYWORD2
+getIDL	KEYWORD2
+readRange	KEYWORD2
+minimum	KEYWORD2
+maximum	KEYWORD2
+setMax	KEYWORD2
+setMin	KEYWORD2
+sleep	KEYWORD2
+wake	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+TEMP_RAW	LITERAL1
+TEMP_K	LITERAL1
+TEMP_C	LITERAL1
+TEMP_F	LITERAL1
