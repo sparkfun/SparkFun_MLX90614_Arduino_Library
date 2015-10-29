@@ -185,6 +185,8 @@ uint8_t IRTherm::setEmissivity(float emis)
 		return 0; // Return fail if not
 	// Calculate the raw 16-bit value:
 	uint16_t ke = uint16_t(65535.0 * emis);
+	ke = constrain(ke, 0x2000, 0xFFFF);
+
 	// Write that value to the ke register
 	return writeEEPROM(MLX90614_REGISTER_KE, (int16_t)ke);
 }
