@@ -1,5 +1,5 @@
 #######################################
-# Syntax Coloring Map For SFE_MicroOLED
+# Syntax Coloring Map For SparkFunMLX90614
 #######################################
 
 #######################################

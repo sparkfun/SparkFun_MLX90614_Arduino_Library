@@ -38,10 +38,10 @@ SparkFun IR Thermometer Evaluation Board - MLX90614
 #define MLX90614_REGISTER_KE      0x24
 #define MLX90614_REGISTER_CONFIG  0x25
 #define MLX90614_REGISTER_ADDRESS 0x2E
-#define MLX90614_REGISTER_ID0     0x1C
-#define MLX90614_REGISTER_ID1     0x1D
-#define MLX90614_REGISTER_ID2     0x1E
-#define MLX90614_REGISTER_ID3     0x1F
+#define MLX90614_REGISTER_ID0     0x3C
+#define MLX90614_REGISTER_ID1     0x3D
+#define MLX90614_REGISTER_ID2     0x3E
+#define MLX90614_REGISTER_ID3     0x3F
 #define MLX90614_REGISTER_SLEEP   0xFF // Not really a register, but close enough
 
 #define I2C_READ_TIMEOUT 1000
