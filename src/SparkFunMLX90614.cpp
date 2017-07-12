@@ -280,19 +280,14 @@ uint8_t IRTherm::sleep(void)
 
 uint8_t IRTherm::wake(void)
 {
-	// Wake operation from datasheet. (Doesn't seem to be working.)
-	pinMode(SCL, INPUT); // SCL high
+	// this does seem to work - though it is different than what is explained in the datasheet
+	TWCR &= ~_BV(TWEN); 					//Disable Two Wire
 	pinMode(SDA, OUTPUT);
-	digitalWrite(SDA, LOW); // SDA low
-	delay(50); // delay at least 33ms
-	pinMode(SDA, INPUT); // SDA high
-	delay(250);
-	// PWM to SMBus mode:
-	pinMode(SCL, OUTPUT);
-	digitalWrite(SCL, LOW); // SCL low
-	delay(10); // Delay at least 1.44ms
-	pinMode(SCL, INPUT); // SCL high
+	digitalWrite(SDA, LOW); 				// SDA low
+	delay(40); 						// delay at least 33ms
+	digitalWrite(SDA, HIGH);
 	Wire.begin();
+	delay(350); 						// delay before reading first value (250ms typ according to datasheet)
 }
 
 int16_t IRTherm::calcRawTemp(float calcTemp)
