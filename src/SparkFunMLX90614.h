@@ -46,12 +46,12 @@ SparkFun IR Thermometer Evaluation Board - MLX90614
 
 #define I2C_READ_TIMEOUT 1000
 
-typedef enum temperature_units {
+typedef enum {
 	TEMP_RAW,
 	TEMP_K,
 	TEMP_C,
 	TEMP_F
-};
+} temperature_units;
 
 class IRTherm 
 {
