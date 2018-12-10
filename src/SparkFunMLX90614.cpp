@@ -280,7 +280,8 @@ uint8_t IRTherm::sleep(void)
 
 uint8_t IRTherm::wake(void)
 {
-	// Wake operation from datasheet. (Doesn't seem to be working.)
+	// Wake operation from datasheet
+	Wire.end(); // stop i2c bus to send wake up request via digital pins
 	pinMode(SCL, INPUT); // SCL high
 	pinMode(SDA, OUTPUT);
 	digitalWrite(SDA, LOW); // SDA low
