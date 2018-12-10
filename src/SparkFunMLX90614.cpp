@@ -355,18 +355,11 @@ float IRTherm::calcTemperature(int16_t rawTemp)
 
 uint8_t IRTherm::I2CReadWord(byte reg, int16_t * dest)
 {
-	int timeout = I2C_READ_TIMEOUT;
-	
 	Wire.beginTransmission(_deviceAddress);
 	Wire.write(reg);
 	
 	Wire.endTransmission(false); // Send restart
 	Wire.requestFrom(_deviceAddress, (uint8_t) 3);
-	
-	while ((Wire.available() < 3) && (timeout-- > 0))
-		delay(1);
-	if (timeout <= 0)
-		return 0;
 	
 	uint8_t lsb = Wire.read();
 	uint8_t msb = Wire.read();
