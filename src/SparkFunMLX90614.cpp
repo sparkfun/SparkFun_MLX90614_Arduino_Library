@@ -281,7 +281,7 @@ uint8_t IRTherm::sleep(void)
 uint8_t IRTherm::wake(void)
 {
 	// Wake operation from datasheet
-	Wire.end(); // stop i2c bus to send wake up request via digital pins
+	Wire.endTransmission(true); // stop i2c bus transmission BEFORE sending wake up request
 	pinMode(SCL, INPUT); // SCL high
 	pinMode(SDA, OUTPUT);
 	digitalWrite(SDA, LOW); // SDA low
@@ -293,7 +293,7 @@ uint8_t IRTherm::wake(void)
 	digitalWrite(SCL, LOW); // SCL low
 	delay(10); // Delay at least 1.44ms
 	pinMode(SCL, INPUT); // SCL high
-	Wire.begin();
+	Wire.beginTransmission(_deviceAddress); // reactivate i2c bus transmission AFTER sending wake up request
 }
 
 int16_t IRTherm::calcRawTemp(float calcTemp)
