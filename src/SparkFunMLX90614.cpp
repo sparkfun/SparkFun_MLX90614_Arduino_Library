@@ -31,7 +31,7 @@ IRTherm::IRTherm()
 uint8_t IRTherm::begin(uint8_t address)
 {
 	_deviceAddress = address; // Store the address in a private member
-	
+
 	Wire.begin(); // Initialize I2C
 	//! TODO: read a register, return success only if the register
 	//! produced a known-good value.
@@ -104,7 +104,7 @@ uint8_t IRTherm::readObject()
 		_rawObject = rawObj;
 		return 1;
 	}
-	return 0;	
+	return 0;
 }
 
 uint8_t IRTherm::readObject2()
@@ -122,7 +122,7 @@ uint8_t IRTherm::readObject2()
 		_rawObject2 = rawObj;
 		return 1;
 	}
-	return 0;	
+	return 0;
 }
 
 uint8_t IRTherm::readAmbient()
@@ -174,7 +174,7 @@ uint8_t IRTherm::setMin(float minTemp)
 {
 	// Convert the unit-ed value to a raw ADC value:
 	int16_t rawMin = calcRawTemp(minTemp);
-	// Write that value to the TOMIN EEPROM address:	
+	// Write that value to the TOMIN EEPROM address:
 	return writeEEPROM(MLX90614_REGISTER_TOMIN, rawMin);
 }
 
@@ -226,15 +226,15 @@ uint8_t IRTherm::setAddress(uint8_t newAdd)
 	{
 		tempAdd &= 0xFF00; // Mask out the address (MSB is junk?)
 		tempAdd |= newAdd; // Add the new address
-		
+
 		// Write the new addres back to EEPROM:
 		return writeEEPROM(MLX90614_REGISTER_ADDRESS, tempAdd);
-	}	
+	}
 	return 0;
 }
 
 uint8_t IRTherm::readID(void)
-{	
+{
 	for (int i=0; i<4; i++)
 	{
 		int16_t temp = 0;
@@ -265,13 +265,13 @@ uint8_t IRTherm::sleep(void)
 	// Bits sent: _deviceAddress (shifted left 1) + 0xFF
 	uint8_t crc = crc8(0, (_deviceAddress << 1));
 	crc = crc8(crc, MLX90614_REGISTER_SLEEP);
-	
+
 	// Manually send the sleep command:
 	Wire.beginTransmission(_deviceAddress);
 	Wire.write(MLX90614_REGISTER_SLEEP);
 	Wire.write(crc);
 	Wire.endTransmission(true);
-	
+
 	// Set the SCL pin LOW, and SDA pin HIGH (should be pulled up)
 	pinMode(SCL, OUTPUT);
 	digitalWrite(SCL, LOW);
@@ -299,7 +299,7 @@ uint8_t IRTherm::wake(void)
 int16_t IRTherm::calcRawTemp(float calcTemp)
 {
 	int16_t rawTemp; // Value to eventually be returned
-	
+
 	if (_defaultUnit == TEMP_RAW)
 	{
 		// If unit is set to raw, just return that:
@@ -332,7 +332,7 @@ int16_t IRTherm::calcRawTemp(float calcTemp)
 float IRTherm::calcTemperature(int16_t rawTemp)
 {
 	float retTemp;
-	
+
 	if (_defaultUnit == TEMP_RAW)
 	{
 		retTemp = (float) rawTemp;
@@ -349,7 +349,7 @@ float IRTherm::calcTemperature(int16_t rawTemp)
 			}
 		}
 	}
-	
+
 	return retTemp;
 }
 
@@ -357,20 +357,20 @@ uint8_t IRTherm::I2CReadWord(byte reg, int16_t * dest)
 {
 	Wire.beginTransmission(_deviceAddress);
 	Wire.write(reg);
-	
+
 	Wire.endTransmission(false); // Send restart
 	Wire.requestFrom(_deviceAddress, (uint8_t) 3);
-	
+
 	uint8_t lsb = Wire.read();
 	uint8_t msb = Wire.read();
 	uint8_t pec = Wire.read();
-	
+
 	uint8_t crc = crc8(0, (_deviceAddress << 1));
 	crc = crc8(crc, reg);
 	crc = crc8(crc, (_deviceAddress << 1) + 1);
 	crc = crc8(crc, lsb);
 	crc = crc8(crc, msb);
-	
+
 	if (crc == pec)
 	{
 		*dest = (msb << 8) | lsb;
@@ -383,19 +383,19 @@ uint8_t IRTherm::I2CReadWord(byte reg, int16_t * dest)
 }
 
 uint8_t IRTherm::writeEEPROM(byte reg, int16_t data)
-{	
+{
 	// Clear out EEPROM first:
 	if (I2CWriteWord(reg, 0) != 0)
 		return 0; // If the write failed, return 0
 	delay(5); // Delay tErase
-	
+
 	uint8_t i2cRet = I2CWriteWord(reg, data);
 	delay(5); // Delay tWrite
-	
+
 	if (i2cRet == 0)
 		return 1;
 	else
-		return 0;	
+		return 0;
 }
 
 uint8_t IRTherm::I2CWriteWord(byte reg, int16_t data)
@@ -403,12 +403,12 @@ uint8_t IRTherm::I2CWriteWord(byte reg, int16_t data)
 	uint8_t crc;
 	uint8_t lsb = data & 0x00FF;
 	uint8_t msb = (data >> 8);
-	
+
 	crc = crc8(0, (_deviceAddress << 1));
 	crc = crc8(crc, reg);
 	crc = crc8(crc, lsb);
 	crc = crc8(crc, msb);
-	
+
 	Wire.beginTransmission(_deviceAddress);
 	Wire.write(reg);
 	Wire.write(lsb);
