@@ -24,10 +24,10 @@ SparkFun IR Thermometer Evaluation Board - MLX90614
 // Default I2C PIN for non Atmega Boards //
 ///////////////////////////////////////////
 #ifndef SDA
-#define SDA		(digitalPinToPinName(PIN_WIRE_SDA))
+#define SDA	PIN_WIRE_SDA
 #endif
 #ifndef SCL
-#define SCL		(digitalPinToPinName(PIN_WIRE_SCL))
+#define SCL PIN_WIRE_SCL
 #endif
 
 //////////////////////////////////
@@ -74,7 +74,9 @@ public:
 	// communication with an MLX90614 device at the specified 7-bit I2C
 	// address.
 	// If no parameter is supplied, the default MLX90614 address is used.
-	uint8_t begin(uint8_t address = MLX90614_DEFAULT_ADDRESS);
+	bool begin(uint8_t address = MLX90614_DEFAULT_ADDRESS, TwoWire &wirePort = Wire);
+
+	bool isConnected();
 
 	// setUnit(<unit>) configures the units returned by the ambient(),
 	// object(), minimum() and maximum() functions, and it determines what
@@ -156,6 +158,8 @@ public:
 
 private:
 	uint8_t _deviceAddress; // MLX90614's 7-bit I2C address
+	TwoWire *_i2cPort;
+	
 	temperature_units _defaultUnit; // Keeps track of configured temperature unit
 
 	// These keep track of the raw temperature values read from the sensor:

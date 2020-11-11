@@ -28,14 +28,20 @@ IRTherm::IRTherm()
 	_rawMin = 0;
 }
 
-uint8_t IRTherm::begin(uint8_t address)
+bool IRTherm::begin(uint8_t address, TwoWire &wirePort)
 {
 	_deviceAddress = address; // Store the address in a private member
+	_i2cPort = &wirePort;
 
-	Wire.begin(); // Initialize I2C
-	//! TODO: read a register, return success only if the register
-	//! produced a known-good value.
-	return 1; // Return success
+	return (isConnected());
+}
+
+bool IRTherm::isConnected()
+{
+	_i2cPort->beginTransmission(_deviceAddress);
+	if (_i2cPort->endTransmission() == 0)
+		return true;
+	return false;
 }
 
 void IRTherm::setUnit(temperature_units unit)
@@ -267,10 +273,10 @@ uint8_t IRTherm::sleep(void)
 	crc = crc8(crc, MLX90614_REGISTER_SLEEP);
 
 	// Manually send the sleep command:
-	Wire.beginTransmission(_deviceAddress);
-	Wire.write(MLX90614_REGISTER_SLEEP);
-	Wire.write(crc);
-	Wire.endTransmission(true);
+	_i2cPort->beginTransmission(_deviceAddress);
+	_i2cPort->write(MLX90614_REGISTER_SLEEP);
+	_i2cPort->write(crc);
+	_i2cPort->endTransmission(true);
 
 	// Set the SCL pin LOW, and SDA pin HIGH (should be pulled up)
 	pinMode(SCL, OUTPUT);
@@ -281,7 +287,7 @@ uint8_t IRTherm::sleep(void)
 uint8_t IRTherm::wake(void)
 {
 	// Wake operation from datasheet
-	Wire.endTransmission(true); // stop i2c bus transmission BEFORE sending wake up request
+	_i2cPort->endTransmission(true); // stop i2c bus transmission BEFORE sending wake up request
 	pinMode(SCL, INPUT); // SCL high
 	pinMode(SDA, OUTPUT);
 	digitalWrite(SDA, LOW); // SDA low
@@ -293,7 +299,7 @@ uint8_t IRTherm::wake(void)
 	digitalWrite(SCL, LOW); // SCL low
 	delay(10); // Delay at least 1.44ms
 	pinMode(SCL, INPUT); // SCL high
-	Wire.beginTransmission(_deviceAddress); // reactivate i2c bus transmission AFTER sending wake up request
+	_i2cPort->beginTransmission(_deviceAddress); // reactivate i2c bus transmission AFTER sending wake up request
 }
 
 int16_t IRTherm::calcRawTemp(float calcTemp)
@@ -355,15 +361,15 @@ float IRTherm::calcTemperature(int16_t rawTemp)
 
 uint8_t IRTherm::I2CReadWord(byte reg, int16_t * dest)
 {
-	Wire.beginTransmission(_deviceAddress);
-	Wire.write(reg);
+	_i2cPort->beginTransmission(_deviceAddress);
+	_i2cPort->write(reg);
 
-	Wire.endTransmission(false); // Send restart
-	Wire.requestFrom(_deviceAddress, (uint8_t) 3);
+	_i2cPort->endTransmission(false); // Send restart
+	_i2cPort->requestFrom(_deviceAddress, (uint8_t) 3);
 
-	uint8_t lsb = Wire.read();
-	uint8_t msb = Wire.read();
-	uint8_t pec = Wire.read();
+	uint8_t lsb = _i2cPort->read();
+	uint8_t msb = _i2cPort->read();
+	uint8_t pec = _i2cPort->read();
 
 	uint8_t crc = crc8(0, (_deviceAddress << 1));
 	crc = crc8(crc, reg);
@@ -409,12 +415,12 @@ uint8_t IRTherm::I2CWriteWord(byte reg, int16_t data)
 	crc = crc8(crc, lsb);
 	crc = crc8(crc, msb);
 
-	Wire.beginTransmission(_deviceAddress);
-	Wire.write(reg);
-	Wire.write(lsb);
-	Wire.write(msb);
-	Wire.write(crc);
-	return Wire.endTransmission(true);
+	_i2cPort->beginTransmission(_deviceAddress);
+	_i2cPort->write(reg);
+	_i2cPort->write(lsb);
+	_i2cPort->write(msb);
+	_i2cPort->write(crc);
+	return _i2cPort->endTransmission(true);
 }
 
 uint8_t IRTherm::crc8 (uint8_t inCrc, uint8_t inData)

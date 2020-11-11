@@ -28,8 +28,14 @@ IRTherm therm; // Create an IRTherm object to interact with throughout
 
 void setup() 
 {
-  Serial.begin(9600); // Initialize Serial to log output
-  therm.begin(); // Initialize the MLX90614
+  Serial.begin(115200); // Initialize Serial to log output
+  Wire.begin(); //Join I2C bus
+  
+  if (therm.begin() == false){ // Initialize the MLX90614
+    Serial.println("Qwiic IR thermometer did not acknowledge! Freezing!");
+    while(1);
+  }
+  Serial.println("Qwiic IR thermometer acknowledged.");
   
   if (therm.readID()) // Read from the ID registers
   { // If the read succeeded, print the ID:
