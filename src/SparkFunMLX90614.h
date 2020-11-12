@@ -92,7 +92,7 @@ public:
 	// MLX90614. It will return either 1 on success or 0 on failure. (Failure
 	// can result from either a timed out I2C transmission, or an incorrect
 	// checksum value).
-	uint8_t read(void);
+	bool read(void);
 
 	// object() returns the MLX90614's most recently read object temperature
 	// after the read() function has returned successfully. The float value
@@ -106,7 +106,7 @@ public:
 
 	// readEmissivity() reads the MLX90614's emissivity setting. It will
 	// return a value between 0.1 and 1.0.
-	float readEmissivity(void);
+	float readEmissivity();
 
 	// setEmissivity(<emis>) can set the MLX90614's configured emissivity
 	// EEPROM value.
@@ -116,7 +116,7 @@ public:
 
 	// readAddress() returns the MLX90614's configured 7-bit I2C bus address.
 	// A value between 0x01 and 0x7F should be returned.
-	uint8_t readAddress(void);
+	uint8_t readAddress();
 
 	// setAddress(<newAdd>) can set the MLX90614's 7-bit I2C bus address.
 	// The <newAdd> parameter should be a value between 0x01 and 0x7F.
@@ -126,18 +126,18 @@ public:
 
 	// readID() reads the 64-bit ID of the MLX90614.
 	// Return value is either 1 on success or 0 on failure.
-	uint8_t readID(void);
+	uint8_t readID();
 
 	// After calling readID() getIDH() and getIDL() can be called to read
 	// the upper 4 bytes and lower 4-bytes, respectively, of the MLX90614's
 	// identification registers.
-	uint32_t getIDH(void);
-	uint32_t getIDL(void);
+	uint32_t getIDH();
+	uint32_t getIDL();
 
 	// readRange() pulls the object maximum and minimum values stored in the
 	// MLX90614's EEPROM.
 	// It will return either 1 on success or 0 on failure.
-	uint8_t readRange(void);
+	bool readRange(void);
 
 	// minimum() and maximum() return the MLX90614's minimum and maximum object
 	// sensor readings.
@@ -151,10 +151,10 @@ public:
 	uint8_t setMin(float minTemp);
 
 	// sleep() sets the MLX90614 into a low-power sleep mode.
-	uint8_t sleep(void);
+	void sleep();
 
 	// wake() should revive the MLX90614 from low-power sleep mode.
-	uint8_t wake(void);
+	void wake();
 
 private:
 	uint8_t _deviceAddress; // MLX90614's 7-bit I2C address
@@ -169,14 +169,14 @@ private:
 
 	// These functions individually read the object, object2, and ambient
 	// temperature values from the MLX90614's RAM:
-	uint8_t readObject(void);
-	uint8_t readObject2(void);
-	uint8_t readAmbient(void);
+	bool readObject(void);
+	bool readObject2(void);
+	bool readAmbient(void);
 
 	// These functions individually read the min and mx temperatures in
 	// the MLX90614's EEPROM:
-	uint8_t readMax(void);
-	uint8_t readMin(void);
+	bool readMax(void);
+	bool readMin(void);
 
 	// calcTemperature converts a raw ADC temperature reading to the
 	// set unit.
@@ -188,11 +188,11 @@ private:
 
 	// Abstract function to write 16-bits to an address in the MLX90614's
 	// EEPROM
-	uint8_t writeEEPROM(byte reg, int16_t data);
+	bool writeEEPROM(byte reg, int16_t data);
 
 	// Abstract functions to read and write 16-bit values from a RAM
 	// or EEPROM address in the MLX90614
-	uint8_t I2CReadWord(byte reg, int16_t * dest);
+	bool I2CReadWord(byte reg, int16_t * dest);
 	uint8_t I2CWriteWord(byte reg, int16_t data);
 
 	// crc8 returns a calculated crc value given an initial value and

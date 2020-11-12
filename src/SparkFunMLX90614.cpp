@@ -49,26 +49,26 @@ void IRTherm::setUnit(temperature_units unit)
 	_defaultUnit = unit; // Store the unit into a private member
 }
 
-uint8_t IRTherm::read()
+bool IRTherm::read()
 {
 	// read both the object and ambient temperature values
 	if (readObject() && readAmbient())
 	{
 		// If the reads succeeded, return success
-		return 1;
+		return true;
 	}
-	return 0; // Else return fail
+	return false; // Else return fail
 }
 
-uint8_t IRTherm::readRange()
+bool IRTherm::readRange()
 {
 	// Read both minimum and maximum values from EEPROM
 	if (readMin() && readMax())
 	{
 		// If the read succeeded, return success
-		return 1;
+		return true;
 	}
-	return 0; // Else return fail
+	return false; // Else return fail
 }
 
 float IRTherm::ambient(void)
@@ -95,7 +95,7 @@ float IRTherm::maximum(void)
 	return calcTemperature(_rawMax);
 }
 
-uint8_t IRTherm::readObject()
+bool IRTherm::readObject()
 {
 	int16_t rawObj;
 	// Read from the TOBJ1 register, store into the rawObj variable
@@ -108,12 +108,12 @@ uint8_t IRTherm::readObject()
 		}
 		// Store the object temperature into the class variable
 		_rawObject = rawObj;
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-uint8_t IRTherm::readObject2()
+bool IRTherm::readObject2()
 {
 	int16_t rawObj;
 	// Read from the TOBJ2 register, store into the rawObj variable
@@ -126,12 +126,12 @@ uint8_t IRTherm::readObject2()
 		}
 		// Store the object2 temperature into the class variable
 		_rawObject2 = rawObj;
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-uint8_t IRTherm::readAmbient()
+bool IRTherm::readAmbient()
 {
 	int16_t rawAmb;
 	// Read from the TA register, store value in rawAmb
@@ -139,33 +139,33 @@ uint8_t IRTherm::readAmbient()
 	{
 		// If the read succeeds, store the read value
 		_rawAmbient = rawAmb; // return success
-		return 1;
+		return true;
 	}
-	return 0; // else return fail
+	return false; // else return fail
 }
 
-uint8_t IRTherm::readMax()
+bool IRTherm::readMax()
 {
 	int16_t toMax;
 	// Read from the TOMax EEPROM address, store value in toMax
 	if (I2CReadWord(MLX90614_REGISTER_TOMAX, &toMax))
 	{
 		_rawMax = toMax;
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-uint8_t IRTherm::readMin()
+bool IRTherm::readMin()
 {
 	int16_t toMin;
 	// Read from the TOMin EEPROM address, store value in toMax
 	if (I2CReadWord(MLX90614_REGISTER_TOMIN, &toMin))
 	{
 		_rawMin = toMin;
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
 uint8_t IRTherm::setMax(float maxTemp)
@@ -197,7 +197,7 @@ uint8_t IRTherm::setEmissivity(float emis)
 	return writeEEPROM(MLX90614_REGISTER_KE, (int16_t)ke);
 }
 
-float IRTherm::readEmissivity(void)
+float IRTherm::readEmissivity()
 {
 	int16_t ke;
 	if (I2CReadWord(MLX90614_REGISTER_KE, &ke))
@@ -209,7 +209,7 @@ float IRTherm::readEmissivity(void)
 	return 0; // Else return fail
 }
 
-uint8_t IRTherm::readAddress(void)
+uint8_t IRTherm::readAddress()
 {
 	int16_t tempAdd;
 	// Read from the 7-bit I2C address EEPROM storage address:
@@ -239,7 +239,7 @@ uint8_t IRTherm::setAddress(uint8_t newAdd)
 	return 0;
 }
 
-uint8_t IRTherm::readID(void)
+uint8_t IRTherm::readID()
 {
 	for (int i=0; i<4; i++)
 	{
@@ -253,19 +253,19 @@ uint8_t IRTherm::readID(void)
 	return 1;
 }
 
-uint32_t IRTherm::getIDH(void)
+uint32_t IRTherm::getIDH()
 {
 	// Return the upper 32 bits of the ID
 	return ((uint32_t)id[3] << 16) | id[2];
 }
 
-uint32_t IRTherm::getIDL(void)
+uint32_t IRTherm::getIDL()
 {
 	// Return the lower 32 bits of the ID
 	return ((uint32_t)id[1] << 16) | id[0];
 }
 
-uint8_t IRTherm::sleep(void)
+void IRTherm::sleep()
 {
 	// Calculate a crc8 value.
 	// Bits sent: _deviceAddress (shifted left 1) + 0xFF
@@ -284,7 +284,7 @@ uint8_t IRTherm::sleep(void)
 	pinMode(SDA, INPUT);
 }
 
-uint8_t IRTherm::wake(void)
+void IRTherm::wake()
 {
 	// Wake operation from datasheet
 	_i2cPort->endTransmission(true); // stop i2c bus transmission BEFORE sending wake up request
@@ -359,7 +359,7 @@ float IRTherm::calcTemperature(int16_t rawTemp)
 	return retTemp;
 }
 
-uint8_t IRTherm::I2CReadWord(byte reg, int16_t * dest)
+bool IRTherm::I2CReadWord(byte reg, int16_t * dest)
 {
 	_i2cPort->beginTransmission(_deviceAddress);
 	_i2cPort->write(reg);
@@ -380,15 +380,15 @@ uint8_t IRTherm::I2CReadWord(byte reg, int16_t * dest)
 	if (crc == pec)
 	{
 		*dest = (msb << 8) | lsb;
-		return 1;
+		return true;
 	}
 	else
 	{
-		return 0;
+		return false;;
 	}
 }
 
-uint8_t IRTherm::writeEEPROM(byte reg, int16_t data)
+bool IRTherm::writeEEPROM(byte reg, int16_t data)
 {
 	// Clear out EEPROM first:
 	if (I2CWriteWord(reg, 0) != 0)
@@ -399,9 +399,9 @@ uint8_t IRTherm::writeEEPROM(byte reg, int16_t data)
 	delay(5); // Delay tWrite
 
 	if (i2cRet == 0)
-		return 1;
+		return true;
 	else
-		return 0;
+		return false;
 }
 
 uint8_t IRTherm::I2CWriteWord(byte reg, int16_t data)
