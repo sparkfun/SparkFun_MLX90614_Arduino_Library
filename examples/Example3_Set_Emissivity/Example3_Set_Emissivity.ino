@@ -42,34 +42,53 @@ SparkFun IR Thermometer Evaluation Board - MLX90614
 
 IRTherm therm; // Create an IRTherm object to interact with throughout
 
-const byte LED_PIN = 8; // Optional LED attached to pin 8 (active low)
-
 float newEmissivity = 0.98;
 
 void setup() 
 {
-  Serial.begin(9600); // Initialize Serial to log output
-  Serial.println("Press any key to begin");
-  while (!Serial.available()) ;
-  therm.begin(); // Initialize thermal IR sensor
+  Serial.begin(115200); // Initialize Serial to log output
+  Wire.begin(); // Join I2C bus
+
+  if (therm.begin() == false){  // Initialize the MLX90614
+    Serial.println("Qwiic IR thermometer did not acknowledge! Freezing!");
+    while(1);
+  }
+  Serial.println("Qwiic IR thermometer acknowledged.");
   therm.setUnit(TEMP_F); // Set the library's units to Farenheit
+  pinMode(LED_BUILTIN, OUTPUT); // LED pin as output
 
-  // Call setEmissivity() to configure the MLX90614's 
-  // emissivity compensation:
-  therm.setEmissivity(newEmissivity);
+  Serial.println();
+  Serial.println("Please enter the emissivity you would like to set the thermometer to.");
+  Serial.println("The emissivity of human skin is 0.98.");
+  Serial.println("Valid emissivity values are between 0.1 and 1.0.");
+  
+  while (!Serial.available()) ;
 
-  // readEmissivity() can be called to read the device's
-  // configured emissivity -- it'll return a value between
-  // 0.1 and 1.0.
-  Serial.println("Emissivity: " + String(therm.readEmissivity()));
-  pinMode(LED_PIN, OUTPUT); // LED pin as output
-  setLED(LOW); // LED OFF
+  if (Serial.available()){
+    float newEmissivity = 0;
+    newEmissivity = Serial.parseFloat();
+
+    // Edge-case gaurds
+    if (newEmissivity < 0.1)
+      newEmissivity = 0.1;
+    else if (newEmissivity > 1.0)
+      newEmissivity = 1.0;
+     
+    // Call setEmissivity() to configure the MLX90614's 
+    // emissivity compensation:
+    therm.setEmissivity(newEmissivity);
+
+    // readEmissivity() can be called to read the device's
+    // configured emissivity -- it'll return a value between
+    // 0.1 and 1.0.
+    Serial.println("Emissivity: " + String(therm.readEmissivity()));
+  }
 }
 
 void loop() 
 {
-  setLED(HIGH); //LED on
-  
+  digitalWrite(LED_BUILTIN, HIGH);
+    
   // Call therm.read() to read object and ambient temperatures from the sensor.
   if (therm.read()) // On success, read() will return 1, on fail 0.
   {
@@ -77,21 +96,11 @@ void loop()
   // temperatures.
   // They'll be floats, calculated out to the unit you set with setUnit().
     Serial.print("Object: " + String(therm.object(), 2));
-    Serial.write('°'); // Degree Symbol
     Serial.println("F");
     Serial.print("Ambient: " + String(therm.ambient(), 2));
-    Serial.write('°'); // Degree Symbol
     Serial.println("F");
     Serial.println();
   }
-  setLED(LOW);
-  delay(500);
-}
-
-void setLED(bool on)
-{
-  if (on)
-    digitalWrite(LED_PIN, LOW);
-  else
-    digitalWrite(LED_PIN, HIGH);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
 }

@@ -43,6 +43,7 @@ void setup()
                    String(therm.getIDH(), HEX) +
                    String(therm.getIDL(), HEX));
   }
+  Serial.println(String(therm.readEmissivity()));
 }
 
 void loop() 
