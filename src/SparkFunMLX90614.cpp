@@ -221,7 +221,7 @@ uint8_t IRTherm::readAddress()
 	return 0; // Else return fail
 }
 
-uint8_t IRTherm::setAddress(uint8_t newAdd)
+bool IRTherm::setAddress(uint8_t newAdd)
 {
 	int16_t tempAdd;
 	// Make sure the address is within the proper range:

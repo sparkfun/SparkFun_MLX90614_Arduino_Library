@@ -65,8 +65,7 @@ void setup()
   while (!Serial.available()) ;
 
   if (Serial.available()){
-    float newEmissivity = 0;
-    newEmissivity = Serial.parseFloat();
+    float newEmissivity = Serial.parseFloat();
 
     // Edge-case gaurds
     if (newEmissivity < 0.1)

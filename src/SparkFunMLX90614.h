@@ -122,7 +122,7 @@ public:
 	// The <newAdd> parameter should be a value between 0x01 and 0x7F.
 	// The function returns 1 on success and 0 on failure.
 	// The new address won't take effect until the device is reset.
-	uint8_t setAddress(uint8_t newAdd);
+	bool setAddress(uint8_t newAdd);
 
 	// readID() reads the 64-bit ID of the MLX90614.
 	// Return value is either 1 on success or 0 on failure.
