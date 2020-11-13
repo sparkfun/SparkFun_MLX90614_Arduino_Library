@@ -28,7 +28,7 @@ SparkFun IR Thermometer Evaluation Board - MLX90614
 ******************************************************************************/
 
 #include <Wire.h> // I2C library, required for MLX90614
-#include <SparkFunMLX90614.h> // SparkFunMLX90614 Arduino library
+#include <SparkFunMLX90614.h> //Click here to get the library: http://librarymanager/All#Qwiic_IR_Thermometer by SparkFun
 
 IRTherm therm; // Create an IRTherm object to interact with throughout
 
