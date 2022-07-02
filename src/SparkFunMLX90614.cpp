@@ -329,7 +329,7 @@ int16_t IRTherm::calcRawTemp(float calcTemp)
 			tempFloat = calcTemp;
 		}
 		// Then multiply by 0.02 degK / bit
-		tempFloat *= 50;
+		tempFloat *= 50.0;
 		rawTemp = (int16_t) tempFloat;
 	}
 	return rawTemp;
@@ -351,7 +351,7 @@ float IRTherm::calcTemperature(int16_t rawTemp)
 			retTemp -= 273.15;
 			if (_defaultUnit == TEMP_F)
 			{
-				retTemp = retTemp * 9.0 / 5.0 + 32;
+				retTemp = retTemp * 9.0 / 5.0 + 32.0;
 			}
 		}
 	}
@@ -359,7 +359,7 @@ float IRTherm::calcTemperature(int16_t rawTemp)
 	return retTemp;
 }
 
-bool IRTherm::I2CReadWord(byte reg, int16_t * dest)
+bool IRTherm::I2CReadWord(uint8_t reg, int16_t * dest)
 {
 	_i2cPort->beginTransmission(_deviceAddress);
 	_i2cPort->write(reg);
@@ -388,15 +388,15 @@ bool IRTherm::I2CReadWord(byte reg, int16_t * dest)
 	}
 }
 
-bool IRTherm::writeEEPROM(byte reg, int16_t data)
+bool IRTherm::writeEEPROM(uint8_t reg, int16_t data)
 {
 	// Clear out EEPROM first:
 	if (I2CWriteWord(reg, 0) != 0)
 		return 0; // If the write failed, return 0
-	delay(5); // Delay tErase
+	delay(10); // Delay tErase at least 5 ms
 
 	uint8_t i2cRet = I2CWriteWord(reg, data);
-	delay(5); // Delay tWrite
+	delay(10); // Delay tWrite at least 5 ms
 
 	if (i2cRet == 0)
 		return true;
@@ -404,7 +404,7 @@ bool IRTherm::writeEEPROM(byte reg, int16_t data)
 		return false;
 }
 
-uint8_t IRTherm::I2CWriteWord(byte reg, int16_t data)
+uint8_t IRTherm::I2CWriteWord(uint8_t reg, int16_t data)
 {
 	uint8_t crc;
 	uint8_t lsb = data & 0x00FF;

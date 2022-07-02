@@ -188,12 +188,12 @@ private:
 
 	// Abstract function to write 16-bits to an address in the MLX90614's
 	// EEPROM
-	bool writeEEPROM(byte reg, int16_t data);
+	bool writeEEPROM(uint8_t reg, int16_t data);
 
 	// Abstract functions to read and write 16-bit values from a RAM
 	// or EEPROM address in the MLX90614
-	bool I2CReadWord(byte reg, int16_t * dest);
-	uint8_t I2CWriteWord(byte reg, int16_t data);
+	bool I2CReadWord(uint8_t reg, int16_t * dest);
+	uint8_t I2CWriteWord(uint8_t reg, int16_t data);
 
 	// crc8 returns a calculated crc value given an initial value and
 	// input data.
