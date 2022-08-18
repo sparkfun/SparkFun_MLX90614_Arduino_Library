@@ -173,7 +173,7 @@ uint8_t IRTherm::setMax(float maxTemp)
 	// Convert the unit-ed value to a raw ADC value:
 	int16_t rawMax = calcRawTemp(maxTemp);
 	// Write that value to the TOMAX EEPROM address:
-	return writeEEPROM(MLX90614_REGISTER_TOMAX, rawMax);
+	return writeMLXEEPROM(MLX90614_REGISTER_TOMAX, rawMax);
 }
 
 uint8_t IRTherm::setMin(float minTemp)
@@ -181,7 +181,7 @@ uint8_t IRTherm::setMin(float minTemp)
 	// Convert the unit-ed value to a raw ADC value:
 	int16_t rawMin = calcRawTemp(minTemp);
 	// Write that value to the TOMIN EEPROM address:
-	return writeEEPROM(MLX90614_REGISTER_TOMIN, rawMin);
+	return writeMLXEEPROM(MLX90614_REGISTER_TOMIN, rawMin);
 }
 
 uint8_t IRTherm::setEmissivity(float emis)
@@ -194,7 +194,7 @@ uint8_t IRTherm::setEmissivity(float emis)
 	ke = constrain(ke, 0x2000, 0xFFFF);
 
 	// Write that value to the ke register
-	return writeEEPROM(MLX90614_REGISTER_KE, (int16_t)ke);
+	return writeMLXEEPROM(MLX90614_REGISTER_KE, (int16_t)ke);
 }
 
 float IRTherm::readEmissivity()
@@ -234,7 +234,7 @@ bool IRTherm::setAddress(uint8_t newAdd)
 		tempAdd |= newAdd; // Add the new address
 
 		// Write the new addres back to EEPROM:
-		return writeEEPROM(MLX90614_REGISTER_ADDRESS, tempAdd);
+		return writeMLXEEPROM(MLX90614_REGISTER_ADDRESS, tempAdd);
 	}
 	return 0;
 }
@@ -388,7 +388,7 @@ bool IRTherm::I2CReadWord(uint8_t reg, int16_t * dest)
 	}
 }
 
-bool IRTherm::writeEEPROM(uint8_t reg, int16_t data)
+bool IRTherm::writeMLXEEPROM(uint8_t reg, int16_t data)
 {
 	// Clear out EEPROM first:
 	if (I2CWriteWord(reg, 0) != 0)

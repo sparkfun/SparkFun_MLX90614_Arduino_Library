@@ -188,7 +188,7 @@ private:
 
 	// Abstract function to write 16-bits to an address in the MLX90614's
 	// EEPROM
-	bool writeEEPROM(uint8_t reg, int16_t data);
+	bool writeMLXEEPROM(uint8_t reg, int16_t data);
 
 	// Abstract functions to read and write 16-bit values from a RAM
 	// or EEPROM address in the MLX90614
